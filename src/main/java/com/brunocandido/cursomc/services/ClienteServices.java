@@ -55,6 +55,10 @@ public class ClienteServices {
 
 	@Value("${img.prefix.client.profile}")
 	private String prefix;
+	
+	@Value("${img.profile.size}")
+	private int size;
+
 
 	public Cliente find(Integer id) {
 		UserSpringSecurity user = UserService.authenticated();
@@ -140,6 +144,13 @@ public class ClienteServices {
 		// Extrai a imagem instanciada pelo multipartFile
 
 		BufferedImage jpgImage = imageService.getJpgImageFromFile(multipartFile);
+		
+		//Função dentro de ImageService para cortar a imagem
+		jpgImage = imageService.cropSquare(jpgImage);
+		
+		//Função para ajustar no TAMANHO de armazenamango
+		
+		jpgImage = imageService.resize(jpgImage, size);
 
 		// Montar o arquivo personalizado com base no que o cliente está logado
 

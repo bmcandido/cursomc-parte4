@@ -10,6 +10,7 @@ import java.io.InputStream;
 import javax.imageio.ImageIO;
 
 import org.apache.commons.io.FilenameUtils;
+import org.imgscalr.Scalr;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -54,6 +55,28 @@ public class ImageService {
 		} catch (IOException e) {
 			throw new FileException("Erro ao ler arquivo");
 		}
+	}
+	
+	//função para ajustar o tamanho da imagem que é feita o upload ou seja
+	//pega uma imagem e devolve ela recortada com o tamanho que necessito
+	
+	public BufferedImage cropSquare(BufferedImage sourceImg) {
+		
+		// se a direita formsourceImg.getHeight() <= sourceImg.getWidth() pego o da direita se a nao a da esquerda
+		// a função vai colocar a quantidade de pixel de acordo com o maior lado
+		int min = (sourceImg.getHeight() <= sourceImg.getWidth()) ? sourceImg.getHeight() : sourceImg.getWidth();
+		return Scalr.crop(
+			sourceImg, 
+			(sourceImg.getWidth()/2) - (min/2), 
+			(sourceImg.getHeight()/2) - (min/2), 
+			min, 
+			min);		
+	}
+	
+	
+   //Recebe uma imagem e o tamanho que ela deve ser recortada
+	public BufferedImage resize(BufferedImage sourceImg, int size) {
+		return Scalr.resize(sourceImg, Scalr.Method.ULTRA_QUALITY, size);
 	}
 
 }
