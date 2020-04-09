@@ -60,6 +60,8 @@ public class Cliente implements Serializable {
 	// Esta anotação serve para que o serviço não dê um loop infinito
 	@OneToMany(mappedBy = "cliente")
 	private List<Pedido> pedidos = new ArrayList<>();
+	
+	private String imageURL;
 
 	public Cliente() {
 		addPerfil(Perfil.CLIENTE);
@@ -158,6 +160,14 @@ public class Cliente implements Serializable {
 	public void addPerfil(Perfil perfil) {
 		perfis.add(perfil.getCod());
 	}
+	
+	public String getImageURL() {
+		return imageURL;
+	}
+
+	public void setImageURL(String imageURL) {
+		this.imageURL = imageURL;
+	}
 
 	@Override
 	public int hashCode() {
@@ -183,5 +193,7 @@ public class Cliente implements Serializable {
 			return false;
 		return true;
 	}
+
+
 
 }
