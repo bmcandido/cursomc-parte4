@@ -1,10 +1,12 @@
 package com.brunocandido.cursomc.services;
 
+import java.awt.image.BufferedImage;
 import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -26,6 +28,7 @@ import com.brunocandido.cursomc.exceptions.DataIntegrityException;
 import com.brunocandido.cursomc.exceptions.ObjectNotFoundException;
 import com.brunocandido.cursomc.repositories.ClienteRepository;
 import com.brunocandido.cursomc.repositories.EnderecosRepository;
+import com.brunocandido.cursomc.security.ImageService;
 import com.brunocandido.cursomc.security.UserSpringSecurity;
 
 //2º Camada - Chama Repository
@@ -44,6 +47,14 @@ public class ClienteServices {
 
 	@Autowired
 	private S3Service s3Service;
+
+	// Injetando parametro do arquivo de proprerty
+
+	@Autowired
+	private ImageService imageService;
+
+	@Value("${img.prefix.client.profile}")
+	private String prefix;
 
 	public Cliente find(Integer id) {
 		UserSpringSecurity user = UserService.authenticated();
@@ -125,11 +136,16 @@ public class ClienteServices {
 		if (user == null) {
 			throw new AuthorizationException("Acesso Negado");
 		}
-		URI uri = s3Service.uploadFile(multipartFile);
-		Optional<Cliente> cli = repo.findById(user.getId());
-		cli.get().setImageURL(uri.toString());
-		repo.save(cli.get());
 
-		return uri;
+		// Extrai a imagem instanciada pelo multipartFile
+
+		BufferedImage jpgImage = imageService.getJpgImageFromFile(multipartFile);
+
+		// Montar o arquivo personalizado com base no que o cliente está logado
+
+		String filename = prefix + user.getId() + ".jpg";
+
+		return s3Service.uploadFile(imageService.getInputStream(jpgImage, "jpg"), filename, "image");
+
 	}
 }
