@@ -31,10 +31,10 @@ public class CategoriaResource {
 	@Autowired // Faz o instanciamento automaticamente dentro do objeto
 	private CategoriaService service;
 
-	@RequestMapping(value = "/{id}", method = RequestMethod.GET) // Depois de Criada a Classe CategoriaResourc
-																	// acrescenta value="/{id}",
-
-	/// {id} vai concatenar o Id buscado na URL
+	// Depois de Criada a Classe CategoriaResourc
+	// acrescenta value="/{id}",
+/// {id} vai concatenar o Id buscado na URL
+	@RequestMapping(value = "/{id}", method = RequestMethod.GET) 
 
 	public ResponseEntity<Categoria> find(@PathVariable Integer id) { // Também, é necessario acrescentar @PathVariable
 																		// que
@@ -46,19 +46,11 @@ public class CategoriaResource {
 
 		return ResponseEntity.ok().body(obj); // Retornando o Objeto Encontrado na CAtegoria Repository
 
-//    	Categoria cat1 = new Categoria(1, "Informática");
-//		Categoria cat2 = new Categoria(2, "Escritório");
-//		List<Categoria> lista = new ArrayList<>();
-//		lista.add(cat1);
-//		lista.add(cat2);
-//		return lista;
 
 	}
 
 	// Serve para acrescentar/inserir a URL de coneção classe Categoria exemplo
 	// localhost:8580/categoria/1, insere dentro do post
-	
-	
 	//Anotação @PreAuthorize("hasAnyRole('ADMIN')") significa que somente o usuario ADMIN podera fazer um POST
 	//em Categorias
 	@PreAuthorize("hasAnyRole('ADMIN')")
@@ -67,42 +59,39 @@ public class CategoriaResource {
 		Categoria obj = service.fromDTO(objDto);
 		obj = service.insert(obj);
 		URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
-			.path("/{id}").buildAndExpand(obj.getId()).toUri();
+				.path("/{id}").buildAndExpand(obj.getId()).toUri();
 		return ResponseEntity.created(uri).build();
 	}
+	
 
 	// Serve para alterar/update uma url já existente (Dados que estao nela)
 	
 	@PreAuthorize("hasAnyRole('ADMIN')")
-
-	@RequestMapping(value = "/{id}", method = RequestMethod.PUT)
+	@RequestMapping(value="/{id}", method=RequestMethod.PUT)
 	public ResponseEntity<Void> update(@Valid @RequestBody CategoriaDTO objDto, @PathVariable Integer id) {
 		Categoria obj = service.fromDTO(objDto);
 		obj.setId(id);
 		obj = service.update(obj);
 		return ResponseEntity.noContent().build();
-
 	}
 
 	// Serve para deletar
 	@PreAuthorize("hasAnyRole('ADMIN')")
-	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
-
+	@RequestMapping(value="/{id}", method=RequestMethod.DELETE)
 	public ResponseEntity<Void> delete(@PathVariable Integer id) {
 		service.delete(id);
 		return ResponseEntity.noContent().build();
-
 	}
+	
+	
 
-	@RequestMapping(method = RequestMethod.GET)
+	@RequestMapping(method=RequestMethod.GET)
 	public ResponseEntity<List<CategoriaDTO>> findAll() {
-
 		List<Categoria> list = service.findAll();
-		List<CategoriaDTO> listDto = list.stream().map(obj -> new CategoriaDTO(obj)).collect(Collectors.toList());
-
+		List<CategoriaDTO> listDto = list.stream().map(obj -> new CategoriaDTO(obj)).collect(Collectors.toList());  
 		return ResponseEntity.ok().body(listDto);
-
 	}
+	
 
 	//Quando efetuar a pesquisa no  Jason este metodo faz a requisição de acordo com parametros que vc inserir no endereço
 	// http://localhost:8580/categorias/page?lines=1&direction=DESC

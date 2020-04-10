@@ -81,10 +81,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	// Configurações basicas para liberar o acesso pelo cors() citado acima, tem que
 	// haver isso pois as requisições
 	// serão geradas por APP
+	//como dao problema no PUT e no DELETE foi feito uma atualização, sem essa atualização
+	// o sistema retorna erros de CORS quando são feitos ("POST","GET","PUT","DELETE","OPTIONS")
+	// então essa é uma configuração complementar
 	@Bean
 	CorsConfigurationSource corsConfigurationSource() {
+		
+		CorsConfiguration configuration = new CorsConfiguration().applyPermitDefaultValues();
+		configuration.setAllowedMethods(Arrays.asList("POST","GET","PUT","DELETE","OPTIONS"));
 		final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-		source.registerCorsConfiguration("/**", new CorsConfiguration().applyPermitDefaultValues());
+		source.registerCorsConfiguration("/**", configuration);
 		return source;
 	}
 
